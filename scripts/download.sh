@@ -16,3 +16,40 @@
 #   CCAGGATTTACAGACTTTAAA
 #
 #   If $4 == "another" only the **first two sequence** should be output
+
+#!/bin/bash
+
+if [ "$#" -lt 2 ]; then
+    echo "Usage: $0 <url> <output_directory> [yes/no] [filter_keyword]"
+    exit 1
+fi
+
+url="$1"
+output_directory="$2"
+uncompress="$3"
+filter_keyword="$4"
+
+# Create the output directory if it doesn't exist
+mkdir -p "$output_directory"
+
+# Download the file
+curl -o "$output_directory/$(basename "$url")" "$url"
+
+# Check if the download was successful
+if [ "$?" -ne 0 ]; then
+    echo "Error downloading the file from $url"
+    exit 1
+fi
+
+# Uncompress the file if specified
+if [ "$uncompress" == "yes" ]; then
+    gunzip "$output_directory/$(basename "$url")"
+fi
+
+# Filter the sequences based on the keyword
+if [ -n "$filter_keyword" ]; then
+    grep -v "$filter_keyword" "$output_directory/$(basename "$url")" > "$output_directory/filtered_$(basename "$url")"
+fi
+
+echo "Download and processing completed successfully."
+
