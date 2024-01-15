@@ -1,3 +1,4 @@
+
 #Download all the files specified in data/filenames
 for url in $(<data/urls); do
     bash scripts/download.sh $url data
@@ -39,8 +40,10 @@ done
 # (this should be a single log file, and information should be *appended* to it on each run)
 # - cutadapt: Reads with adapters and total basepairs
 # - star: Percentages of uniquely mapped reads, reads mapped to multiple loci, and to too many loci
-# tip: use grep to filter the lines you're interested in
+# tip: use grep to filter the lines you're interested in 
 
 cat log/cutadapt/*.log > log/pipeline.log
+
+echo "Pipeline log complete"
 
 echo "Pipeline completed successfully."
