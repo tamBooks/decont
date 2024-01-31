@@ -1,0 +1,10 @@
+name: decontProj
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - multiqc
+  - cutadapt
+  - star
+  - fastqc
+prefix: /home/vant/miniforge3/envs/decontProj
