@@ -8,8 +8,10 @@ done
 # filter to remove all small nuclear RNAs
 bash scripts/download.sh https://bioinformatics.cnio.es/data/courses/decont/contaminants.fasta.gz res yes #TODO
 
+grep -v "small nuclear" res/contaminants.fasta > res/contaminants_filtered.fasta
+
 # Index the contaminants file
-bash scripts/index.sh res/contaminants.fasta res/contaminants_idx
+bash scripts/index.sh res/contaminants_filtered.fasta res/contaminants_idx
 
 # Merge the samples into a single file
 for sid in $(ls data/*.fastq.gz | sed 's/.*\///' | cut -d'.' -f1 | sort -u); do
@@ -42,8 +44,33 @@ done
 # - star: Percentages of uniquely mapped reads, reads mapped to multiple loci, and to too many loci
 # tip: use grep to filter the lines you're interested in 
 
-cat log/cutadapt/*.log > log/pipeline.log
+echo "Pipeline log start" > log/pipeline.log
 
-echo "Pipeline log complete"
+echo "Writing Pipeline log"
+
+for sampleid in $(ls data/*.fastq.gz | cut -d "-" -f1 | sed 's:data/::' | sort | uniq)
+do
+    {
+        echo "SAMPLE: $sampleid"
+        echo " "
+        
+        echo "CUTADAPT: "
+        grep -hi -e "Reads with adapters" log/cutadapt/$sampleid.log 
+        grep -hi -e "total basepairs" log/cutadapt/$sampleid.log 
+        echo " "
+        
+        echo "STAR: "
+        grep -hi -e "Uniquely mapped reads %" out/star/$sampleid/${sampleid}_Log.final.out 
+        grep -hi -e "% of reads mapped to multiple loci" out/star/$sampleid/${sampleid}_Log.final.out 
+        grep -hi -e "% of reads mapped to too many loci" out/star/$sampleid/${sampleid}_Log.final.out 
+        echo " "
+    } >> log/pipeline.log
+
+done
+
+echo "Pipeline log Compelte"
 
 echo "Pipeline completed successfully."
+
+bash scripts/cleanup.sh
+

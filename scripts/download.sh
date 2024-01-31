@@ -33,7 +33,20 @@ filter_keyword="$4"
 mkdir -p "$output_directory"
 
 # Download the file
-curl -o "$output_directory/$(basename "$url")" "$url"
+#curl -o "$output_directory/$(basename "$url")" "$url"
+
+if [ -e "$output_file" ]; then
+    echo "File $output_file already exists. Skipping download."
+else
+    # Download the file
+    curl -o "$output_directory/$(basename "$url")" "$url"
+
+    # Check if the download was successful
+    if [ "$?" -ne 0 ]; then
+        echo "Error downloading the file from $url"
+        exit 1
+    fi
+fi
 
 # Check if the download was successful
 if [ "$?" -ne 0 ]; then
@@ -44,11 +57,6 @@ fi
 # Uncompress the file if specified
 if [ "$uncompress" == "yes" ]; then
     gunzip "$output_directory/$(basename "$url")"
-fi
-
-# Filter the sequences based on the keyword
-if [ -n "$filter_keyword" ]; then
-    grep -v "$filter_keyword" "$output_directory/$(basename "$url")" > "$output_directory/filtered_$(basename "$url")"
 fi
 
 echo "Download and processing completed successfully."
