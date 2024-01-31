@@ -48,21 +48,21 @@ echo "Pipeline log start" > log/pipeline.log
 
 echo "Writing Pipeline log"
 
-for sampleid in $(ls data/*.fastq.gz | cut -d "-" -f1 | sed 's:data/::' | sort | uniq)
+for sid in $(ls data/*.fastq.gz | cut -d "-" -f1 | sed 's:data/::' | sort | uniq);
 do
     {
-        echo "SAMPLE: $sampleid"
+        echo "SAMPLE: $sid"
         echo " "
         
         echo "CUTADAPT: "
-        grep -hi -e "Reads with adapters" log/cutadapt/$sampleid.log 
-        grep -hi -e "total basepairs" log/cutadapt/$sampleid.log 
+        grep -hi -e "Reads with adapters" log/cutadapt/$sid.log 
+        grep -hi -e "total basepairs" log/cutadapt/$sid.log 
         echo " "
         
         echo "STAR: "
-        grep -hi -e "Uniquely mapped reads %" out/star/$sampleid/${sampleid}_Log.final.out 
-        grep -hi -e "% of reads mapped to multiple loci" out/star/$sampleid/${sampleid}_Log.final.out 
-        grep -hi -e "% of reads mapped to too many loci" out/star/$sampleid/${sampleid}_Log.final.out 
+        grep -hi -e "Uniquely mapped reads %" out/star/$sid/$sid_Log.final.out 
+        grep -hi -e "% of reads mapped to multiple loci" out/star/$sid/$sid_Log.final.out 
+        grep -hi -e "% of reads mapped to too many loci" out/star/$sid/$sid_Log.final.out 
         echo " "
     } >> log/pipeline.log
 
